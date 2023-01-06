@@ -43,8 +43,8 @@ class TripletLoss(nn.Module):
         super(TripletLoss, self).__init__()
         self.margin = margin
 
-    def forward(self, x, label):
-        loss = LF.triplet_loss(x, label, margin=self.margin)
+    def forward(self, x, pos, neg):
+        loss = LF.triplet_loss(x, pos, neg, margin=self.margin)
         return loss
 
 

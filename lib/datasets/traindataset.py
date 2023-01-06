@@ -33,6 +33,12 @@ def inverse_sphere_distances(dim, anchor_to_all_dists, labels, anchor_label):
     q_d_inv = q_d_inv / q_d_inv.sum()
     return q_d_inv.detach().cpu().numpy()
 
+def mine_hardest(scores, cls, qcls, num, negative=True):
+    ranks = torch.argsort(scores, descending=True, dim=0)[1:]
+    mask = (cls[ranks] - qcls == 0).to(torch.int).to(ranks.device)
+    ids = torch.gather(ranks, 0, torch.topk(mask, largest=negative ^ True, k=num, dim=0)[1])
+    return ids.t()
+
 
 class RetrievalDataset(data.Dataset):
     """

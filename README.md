@@ -47,11 +47,12 @@ rm Stanford_Online_Products && rm Stanford_Online_Products.zip
 Minimal command to reproduce the resolution distillation approach of our paper is:
 
 ```bash
-python main.py [-h] [--training-dataset DATASET] [--test-datasets DATASETS] 
+python main.py [-h] (--student-path NETWORK | --student NETWORK)
+                    (--teacher-path NETWORK | --teacher NETWORK)
+                    [--training-dataset DATASET] [--test-datasets DATASETS] 
                     [--directory EXPORT_DIR] [--data-root DATA_DIR]
-                    [--teacher TEACHER] [--teacher-image-size DR] [--image-size QR]
+                    [--teacher-image-size DR] [--image-size QR]
                     [--lr LR] [--lam-1 L1] [--lam-2 L2]
-                    [--gpu-id N] [--workers N]
 ```
 Optimized hyperparameters for each dataset and the default seed (1234) along with the resulting score:
 
@@ -63,6 +64,16 @@ Optimized hyperparameters for each dataset and the default seed (1234) along wit
 
 The available TEACHER model names have the following format `{dataset}-{resolution}r-resnet50-512-gem-w`, 
 such as `cub-448r-resnet50-512-gem-w`
+
+#### Example:
+
+```bash
+python main.py --training-dataset 'cub' --test-datasets 'cub-test' \
+               --directory 'exp' --data-root 'data' \
+               --student 'resnet50' --teacher-path 'cub-448r-resnet50-512-gem-w' \
+               --teacher-image-size 448 --image-size 224 \
+               --lr 1.4025e-4 --lam-1 0.7718 --lam-2 0.6684
+```
 
 ### Test the models
 To only obtain a test performance of a model:
@@ -77,13 +88,20 @@ Asymmetric test only runs if either `--teacher-path` or `--teacher` is specified
 If `--sym` argument is present, symmetric test is performed. To test only a single model sym. performance, load the network as a student.
 
 
-#### Example:
+#### Examples:
 
-Perform both asymmetric and symmetric test with a pre-trained teacher model:
+Perform symmetric test with a pre-trained teacher model:
 
 ```bash
-python test.py --datasets 'cub' --sym \
+python test.py --datasets 'cub-test' --sym \
                --student-path 'cub-448r-resnet50-512-gem-w' \ 
+               --image-size 224
+```
+
+Perform both symmetric and asymmetric test of distilled model:
+```bash
+python test.py --datasets 'cub-test' --sym \
+               --student-path 'cub-S224r-T448r-resnet50-512-gem-w' \
                --teacher-path 'cub-448r-resnet50-512-gem-w' \
                --image-size 224 --teacher-image-size 448
 ```

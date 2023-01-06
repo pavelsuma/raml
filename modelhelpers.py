@@ -13,6 +13,10 @@ PRETRAINED = {
     "cub-224r-resnet50-512-gem-w"               : 'http://ptak.felk.cvut.cz/personal/sumapave/public/cub-224r-resnet50-512-gem-w.pth',
     "cars-224r-resnet50-512-gem-w"              : 'http://ptak.felk.cvut.cz/personal/sumapave/public/cars-224r-resnet50-512-gem-w.pth',
     "sop-224r-resnet50-512-gem-w"               : 'http://ptak.felk.cvut.cz/personal/sumapave/public/sop-224r-resnet50-512-gem-w.pth',
+    # distilled student networks to 224 resolution with our final approach
+    "cub-S224r-T448r-resnet50-512-gem-w": 'http://ptak.felk.cvut.cz/personal/sumapave/public/cub-S224r-T448r-resnet50-512-gem-w.pth',
+    "cars-S224r-T448r-resnet50-512-gem-w": 'http://ptak.felk.cvut.cz/personal/sumapave/public/cars-S224r-T448r-resnet50-512-gem-w.pth',
+    "sop-S224r-T448r-resnet50-512-gem-w": 'http://ptak.felk.cvut.cz/personal/sumapave/public/sop-S224r-T448r-resnet50-512-gem-w.pth',
 }
 
 def load_model(data_root, args=None, arch=None, path=None):

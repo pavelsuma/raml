@@ -53,22 +53,14 @@ def regression_loss(x1, x2, eps=1e-6):
     return torch.sum(D.mean(-1))
 
 
-def triplet_loss(x, label, margin=0.1):
-    dim = x.size(0)  # D
-    nq = torch.sum(label.data == -1).item()  # number of tuples
-    S = x.size(1) // nq  # number of images per tuple including query: 1+1+n
-    P = sum(label[:S] == 1)  # number of positives per tuple
-    N = S-P-1 # number of negatives per tuple
-    R = N*P*nq  # number of final embeddings for all tuples
-    
-    xa = x[:, label.data == -1].permute(1, 0).repeat(1, N*P).view(R, dim).permute(1, 0)
-    xp = x[:, label.data == 1].permute(1, 0).repeat(1, N).view(R, dim).permute(1, 0)
-    xn = x[:, label.data == 0].permute(1, 0).reshape(nq, -1).repeat(1, P).view(R, dim).permute(1, 0)
+def triplet_loss(x, p, n, margin=0.1):
+    # D x nnum x batch_size
+    pnum = p.shape[1]
+    nnum = n.shape[1]
 
-    dist_pos = torch.sum(torch.pow(xa - xp, 2), dim=0)
-    dist_neg = torch.sum(torch.pow(xa - xn, 2), dim=0)
+    dist_pos = torch.sum(torch.pow(x - p, 2), dim=-1)
+    dist_neg = torch.sum(torch.pow(x - n, 2), dim=-1)
 
-    loss = dist_pos - dist_neg + margin
+    loss = dist_pos.repeat_interleave(nnum, 1) - dist_neg.repeat(1, pnum) + margin
     loss = torch.clamp(loss, min=0)
-    loss = torch.sum(torch.mean(loss.view(N, P*nq), dim=0))
-    return loss
+    return loss.mean(dim=-1).sum()

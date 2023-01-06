@@ -34,7 +34,7 @@ parser.add_argument('--whitening', '-w', default=0, type=int,
                         help='set the final embedding dimension given by learnable whitening (linear layer) after the pooling')
 
 # test options
-parser.add_argument('--data-root', metavar='DATA_DIR',
+parser.add_argument('--data-root', metavar='DATA_DIR', default='data',
                     help='destination where the datasets are located')
 parser.add_argument('--datasets', '-d', metavar='DATASETS', default='cub-test',
                     help="comma separated list of test datasets")

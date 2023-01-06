@@ -6,27 +6,22 @@ import numpy as np
 
 from lib.datasets.finegraindataset import FineGrainRegressionTS, TuplesFineGrainDataset, AugFineGrainTS
 from lib.datasets.testdataset import FineGrainTestset
+from lib.datasets.traindataset import mine_hardest
 from lib.layers.loss import RegressionLoss, TripletLoss, SecondOrderLoss
 from modelhelpers import get_model_optimizer, resume_model, save_checkpoint
 from test import run_tests
 
 def sym_train(input, s_model, criterion, train_loader):
-    nq = input[1].shape[0]
     ni = train_loader.dataset.samples_per_class
     nn = train_loader.dataset.nnum
-    cls = input[1]
 
-    s_outputs = s_model(input[0].to(s_model.device, non_blocking=True))
+    s_outputs = s_model(input[0].to(s_model.device, non_blocking=True)).t()
 
-    target = torch.zeros(nq, ni + nn, dtype=torch.int)
-    target[:, :ni], target[:, 0] = 1, -1
-    outputs = torch.zeros(s_outputs.shape[0], nq, ni + nn)
-    outputs[:, :, 0] = s_outputs
-    outputs[:, :, 1:ni] = s_outputs[:, np.asarray([np.delete(np.where(cls == cls[i]), i % ni) for i in range(nq)])]
-
-    s_negatives = s_model(torch.flatten(input[2], end_dim=1).to(s_model.device, non_blocking=True))
-    outputs[:, :, -nn:] = s_negatives.reshape(-1, nq, nn)
-    return criterion(torch.flatten(outputs, start_dim=1, end_dim=2), target.flatten())
+    scores = s_outputs @ s_outputs.t()
+    pos = mine_hardest(scores, input[1], input[1], ni, negative=False)
+    neg = s_model(torch.flatten(input[2], end_dim=1).to(s_model.device, non_blocking=True))
+    neg = neg.reshape(input[1].shape[0], nn, -1)
+    return criterion(s_outputs.unsqueeze(dim=1), s_outputs[pos], neg)
 
 def asym_train(input, s_model, criterion, train_loader, t_model):
     s_outputs = s_model(input[0].flatten(end_dim=input[0].dim() - 4).to(s_model.device, non_blocking=True))
