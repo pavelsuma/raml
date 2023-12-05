@@ -17,7 +17,7 @@ def create_parser():
     parser.add_argument('--training-dataset', '-d', metavar='DATASET', default='cub')
     parser.add_argument('--no-val', dest='val', action='store_false',
                         help='do not run validation')
-    parser.add_argument('--test-datasets', '-td', metavar='DATASETS', default='roxford5k,rparis6k',
+    parser.add_argument('--test-datasets', '-td', metavar='DATASETS', default='cub-test',
                         help='comma separated list of test datasets')
     parser.add_argument('--val-freq', default=20, type=int, metavar='N',
                         help='run val evaluation every N epochs (default: 20)')
@@ -31,7 +31,7 @@ def create_parser():
     student_model.add_argument('--student-path', '-spath', metavar='SNETWORK',
                                help="pretrained network or network path (destination where network is saved)")
 
-    teacher_model = parser.add_mutually_exclusive_group(required=True)
+    teacher_model = parser.add_mutually_exclusive_group(required=False)
     teacher_model.add_argument('--teacher', '-t', metavar='TEACHER')
     teacher_model.add_argument('--teacher-path', '-tpath', metavar='TNETWORK',
                                help="pretrained network or network path (destination where network is saved)")

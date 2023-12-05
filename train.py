@@ -18,9 +18,10 @@ def sym_train(input, s_model, criterion, train_loader):
     s_outputs = s_model(input[0].to(s_model.device, non_blocking=True)).t()
 
     scores = s_outputs @ s_outputs.t()
-    pos = mine_hardest(scores, input[1], input[1], ni, negative=False)
-    neg = s_model(torch.flatten(input[2], end_dim=1).to(s_model.device, non_blocking=True))
-    neg = neg.reshape(input[1].shape[0], nn, -1)
+    target = input[1].to(s_model.device, non_blocking=True)
+    pos = mine_hardest(scores, target, target, ni-1, negative=False)
+    neg = s_model(torch.flatten(input[2], end_dim=1).to(s_model.device, non_blocking=True)).t()
+    neg = neg.reshape(target.shape[0], nn, -1)
     return criterion(s_outputs.unsqueeze(dim=1), s_outputs[pos], neg)
 
 def asym_train(input, s_model, criterion, train_loader, t_model):

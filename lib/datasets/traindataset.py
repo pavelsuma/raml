@@ -35,7 +35,7 @@ def inverse_sphere_distances(dim, anchor_to_all_dists, labels, anchor_label):
 
 def mine_hardest(scores, cls, qcls, num, negative=True):
     ranks = torch.argsort(scores, descending=True, dim=0)[1:]
-    mask = (cls[ranks] - qcls == 0).to(torch.int).to(ranks.device)
+    mask = (cls[ranks] - qcls == 0).to(torch.int)
     ids = torch.gather(ranks, 0, torch.topk(mask, largest=negative ^ True, k=num, dim=0)[1])
     return ids.t()
 
