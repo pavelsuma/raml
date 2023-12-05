@@ -94,7 +94,7 @@ class TuplesFineGrainDataset(FineGrainDataset):
             self.nidxs = [[] for _ in range(len(self.batch))]
         else:
             with torch.no_grad():
-                idxs2images = torch.randperm(len(self.images))[:self.poolsize]
+                idxs2images = np.random.permutation(len(self.images))[:self.poolsize]
                 print('>> Extracting descriptors for negative pool...')
                 if (self.poolsize + self.qsize) >= 1.1*len(self.images):
                     qpool = np.arange(len(self.images))
