@@ -24,7 +24,7 @@ def sym_train(input, s_model, criterion, train_loader):
     neg = neg.reshape(target.shape[0], nn, -1)
     return criterion(s_outputs.unsqueeze(dim=1), s_outputs[pos], neg)
 
-def asym_train(input, s_model, criterion, train_loader, t_model):
+def asym_train(input, s_model, criterion, train_loader, t_model=None):
     s_outputs = s_model(input[0].flatten(end_dim=input[0].dim() - 4).to(s_model.device, non_blocking=True))
 
     if t_model is not None:
